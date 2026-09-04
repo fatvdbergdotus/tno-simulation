@@ -1,3 +1,7 @@
+# Coding assignment TNO:PPAM:
+# To be found at: https://github.com/fatvdbergdotus/tno-simulation/
+# (c) 2026 Freek van den Berg
+
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import Callable
