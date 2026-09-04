@@ -37,6 +37,7 @@ INITIAL_ANGLE: float = 45                                               # degree
 INITIAL_ANGLE_RAD: float = math.radians(INITIAL_ANGLE)                  # radians
 INITIAL_VELOCITY: float = 200                                           # m/s
 STOP_CONDITION: Callable[[State], bool] = lambda state: state.y < 0     # the simulations stop when the projectile hits the ground
+DELTA_T: float = 0.0001                                                 # s
 
 
 
@@ -455,28 +456,28 @@ def engine() -> None:
     simulators = [
         ForwardEulerSimulator(
             forces=[gravity, drag],
-            dt=0.0001,
+            dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION
         ),
 
         ForwardEulerSimulator(
             forces=[gravity, drag, initial_thrust],
-            dt=0.0001,
+            dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION
         ),
 
         ExplicitEulerSimulator(
             forces=[gravity, drag],
-            dt=0.0001,
+            dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION
         ),
 
         ExplicitEulerSimulator(
             forces=[gravity, drag, initial_thrust],
-            dt=0.0001,
+            dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION
         )
