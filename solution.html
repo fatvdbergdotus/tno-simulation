@@ -198,7 +198,7 @@ Data descriptors inherited from <a href="solution.html#Simulator">Simulator</a>:
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Force-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;force&nbsp;components&nbsp;at&nbsp;the&nbsp;current&nbsp;state.<br>
+<dl><dt><a name="Force-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;force&nbsp;components&nbsp;at&nbsp;the&nbsp;current&nbsp;state&nbsp;and&nbsp;time.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Current&nbsp;simulation&nbsp;time&nbsp;in&nbsp;seconds.<br>
@@ -347,7 +347,7 @@ Data descriptors inherited from <a href="solution.html#Force">Force</a>:<br>
 <font color="#000000" face="helvetica, arial"><a name="InitialThrust">class <strong>InitialThrust</strong></a>(<a href="solution.html#Force">Force</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#InitialThrust">InitialThrust</a>(force:&nbsp;float,&nbsp;duration:&nbsp;float)<br>
+<td colspan=2><tt><a href="#InitialThrust">InitialThrust</a>(force:&nbsp;float,&nbsp;duration:&nbsp;float,&nbsp;direction:&nbsp;float)<br>
 &nbsp;<br>
 Represent&nbsp;a&nbsp;constant&nbsp;thrust&nbsp;applied&nbsp;during&nbsp;the&nbsp;initial&nbsp;flight.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
@@ -359,11 +359,12 @@ Represent&nbsp;a&nbsp;constant&nbsp;thrust&nbsp;applied&nbsp;during&nbsp;the&nbs
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="InitialThrust-__init__"><strong>__init__</strong></a>(self, force: float, duration: float)</dt><dd><tt>Initialize&nbsp;the&nbsp;initial&nbsp;thrust.<br>
+<dl><dt><a name="InitialThrust-__init__"><strong>__init__</strong></a>(self, force: float, duration: float, direction: float)</dt><dd><tt>Initialize&nbsp;the&nbsp;initial&nbsp;thrust.<br>
 &nbsp;<br>
 Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;force:&nbsp;Thrust&nbsp;magnitude&nbsp;in&nbsp;Newtons.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;duration:&nbsp;Duration&nbsp;of&nbsp;the&nbsp;thrust&nbsp;in&nbsp;seconds.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;duration:&nbsp;Duration&nbsp;of&nbsp;the&nbsp;thrust&nbsp;in&nbsp;seconds.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;direction:&nbsp;Direction&nbsp;of&nbsp;the&nbsp;thrust&nbsp;in&nbsp;radians.</tt></dd></dl>
 
 <dl><dt><a name="InitialThrust-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;thrust&nbsp;force&nbsp;at&nbsp;the&nbsp;current&nbsp;time.<br>
 &nbsp;<br>
@@ -512,7 +513,8 @@ Data and other attributes defined here:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-engine"><strong>engine</strong></a>() -&gt; None</dt><dd><tt>Create,&nbsp;run,&nbsp;and&nbsp;compare&nbsp;the&nbsp;projectile&nbsp;simulations.</tt></dd></dl>
+<td width="100%"><dl><dt><strong>STOP_CONDITION</strong> <em>lambda</em> state</dt></dl>
+ <dl><dt><a name="-engine"><strong>engine</strong></a>() -&gt; None</dt><dd><tt>Create,&nbsp;run,&nbsp;and&nbsp;compare&nbsp;the&nbsp;projectile&nbsp;simulations.</tt></dd></dl>
  <dl><dt><a name="-plot_results"><strong>plot_results</strong></a>(descriptions: list[str], statess: list[list[solution.State]]) -&gt; None</dt><dd><tt>Plot&nbsp;the&nbsp;trajectories&nbsp;of&nbsp;multiple&nbsp;simulations.<br>
 &nbsp;<br>
 Args:<br>
@@ -527,11 +529,13 @@ Args:<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>Callable</strong> = typing.Callable<br>
 <strong>DENSITY</strong> = 7800<br>
+<strong>FRONTAL_AREA</strong> = 0.0028274333882308137<br>
 <strong>INITIAL_ANGLE</strong> = 45<br>
 <strong>INITIAL_ANGLE_RAD</strong> = 0.7853981633974483<br>
 <strong>INITIAL_VELOCITY</strong> = 200<br>
 <strong>MASS</strong> = 0.8821592171280137<br>
 <strong>RADIUS</strong> = 0.03<br>
+<strong>__annotations__</strong> = {'DENSITY': &lt;class 'float'&gt;, 'INITIAL_ANGLE': &lt;class 'float'&gt;, 'INITIAL_ANGLE_RAD': &lt;class 'float'&gt;, 'INITIAL_VELOCITY': &lt;class 'float'&gt;, 'MASS': &lt;class 'float'&gt;, 'RADIUS': &lt;class 'float'&gt;, 'STOP_CONDITION': typing.Callable[[solution.State], bool]}<br>
 <strong>drag</strong> = &lt;solution.Drag object&gt;<br>
 <strong>gravity</strong> = &lt;solution.Gravity object&gt;<br>
 <strong>initial_state</strong> = State(t=0.0, x=0.0, y=0.0, vx=141.4213562373095, vy=141.4213562373095)<br>

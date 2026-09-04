@@ -5,15 +5,6 @@ import math
 import matplotlib.pyplot as plt
 
 
-# Global constants
-RADIUS = 0.03                         # meters
-DENSITY = 7800                         # kg/m^3
-MASS = (4 / 3) * math.pi * RADIUS**3 * DENSITY
-INITIAL_ANGLE = 45                    # degrees
-INITIAL_ANGLE_RAD = math.radians(INITIAL_ANGLE)
-INITIAL_VELOCITY = 200                 # m/s
-
-
 @dataclass
 class State:
     """Represent the state of the projectile at a given point in time.
@@ -33,6 +24,18 @@ class State:
     vy: float
 
 
+# Global constants
+RADIUS: float = 0.03                                                    # m
+DENSITY: float = 7800                                                   # kg/m^3
+MASS: float = (4 / 3) * math.pi * RADIUS**3 * DENSITY                   # kg
+FRONTAL_AREA = math.pi * RADIUS**2                                      # m^2
+INITIAL_ANGLE: float = 45                                               # degrees
+INITIAL_ANGLE_RAD: float = math.radians(INITIAL_ANGLE)                  # radians
+INITIAL_VELOCITY: float = 200                                           # m/s
+STOP_CONDITION: Callable[[State], bool] = lambda state: state.y < 0     # the simulations stop when the projectile hits the ground
+
+
+
 class Force(ABC):
     """Abstract base class for forces acting on the projectile."""
 
@@ -42,7 +45,7 @@ class Force(ABC):
         t: float,
         state: State
     ) -> tuple[float, float]:
-        """Calculate the force components at the current state.
+        """Calculate the force components at the current state and time.
 
         Args:
             t: Current simulation time in seconds.
@@ -128,7 +131,7 @@ class Drag(Force):
             A tuple containing the drag force components (Fx, Fy)
             in Newtons.
         """
-        v = (state.vx**2 + state.vy**2)**0.5
+        v = (state.vx**2 + state.vy**2)**0.5 # calculate the velocity
 
         if v == 0:
             return 0.0, 0.0
@@ -150,15 +153,17 @@ class Drag(Force):
 class InitialThrust(Force):
     """Represent a constant thrust applied during the initial flight."""
 
-    def __init__(self, force: float, duration: float):
+    def __init__(self, force: float, duration: float, direction: float):
         """Initialize the initial thrust.
 
         Args:
             force: Thrust magnitude in Newtons.
             duration: Duration of the thrust in seconds.
+            direction: Direction of the thrust in radians.
         """
         self.force = force
         self.duration = duration
+        self.direction = direction
 
     def calculate(
         self,
@@ -180,8 +185,8 @@ class InitialThrust(Force):
         """
         if t < self.duration:
             return (
-                self.force * math.cos(INITIAL_ANGLE_RAD),
-                self.force * math.sin(INITIAL_ANGLE_RAD)
+                self.force * math.cos(self.direction),
+                self.force * math.sin(self.direction)
             )
 
         return 0.0, 0.0
@@ -368,8 +373,8 @@ class ExplicitEulerSimulator(Simulator):
             for force in self.forces
         ]
 
-        total_fx = sum(fx for fx, fy in forces)
-        total_fy = sum(fy for fx, fy in forces)
+        total_fx = sum(fx for fx, _ in forces)
+        total_fy = sum(fy for _, fy in forces)
 
         ax = total_fx / self.mass
         ay = total_fy / self.mass
@@ -384,6 +389,8 @@ class ExplicitEulerSimulator(Simulator):
             new_vx,
             new_vy
         )
+
+
 
 
 # Initial state:
@@ -404,12 +411,13 @@ gravity = Gravity(mass=MASS, g=9.81)
 drag = Drag(
     drag_coefficient=0.47,
     air_density=1.225,
-    frontal_area=math.pi * RADIUS**2
+    frontal_area=FRONTAL_AREA
 )
 
 initial_thrust = InitialThrust(
     force=100.0,
-    duration=5.0
+    duration=5.0,
+    direction=INITIAL_ANGLE_RAD
 )
 
 
@@ -445,28 +453,28 @@ def engine() -> None:
             forces=[gravity, drag],
             dt=0.0001,
             mass=MASS,
-            stop_condition=lambda state: state.y < 0
+            stop_condition=STOP_CONDITION
         ),
 
         ForwardEulerSimulator(
             forces=[gravity, drag, initial_thrust],
             dt=0.0001,
             mass=MASS,
-            stop_condition=lambda state: state.y < 0
+            stop_condition=STOP_CONDITION
         ),
 
         ExplicitEulerSimulator(
             forces=[gravity, drag],
             dt=0.0001,
             mass=MASS,
-            stop_condition=lambda state: state.y < 0
+            stop_condition=STOP_CONDITION
         ),
 
         ExplicitEulerSimulator(
             forces=[gravity, drag, initial_thrust],
             dt=0.0001,
             mass=MASS,
-            stop_condition=lambda state: state.y < 0
+            stop_condition=STOP_CONDITION
         )
     ]
 
