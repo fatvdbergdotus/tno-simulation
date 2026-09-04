@@ -341,8 +341,8 @@ class ForwardEulerSimulator(Simulator):
             for force in self.forces
         ]
 
-        total_fx = sum(fx for fx, fy in forces)
-        total_fy = sum(fy for fx, fy in forces)
+        total_fx = sum(fx for fx, _ in forces)
+        total_fy = sum(fy for _, fy in forces)
 
         ax = total_fx / self.mass
         ay = total_fy / self.mass
