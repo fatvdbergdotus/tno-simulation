@@ -4,11 +4,13 @@ from typing import Callable
 import math
 import matplotlib.pyplot as plt
 
-# constants
+# global constants
 RADIUS = 0.03 # meters
 DENSITY = 7800 # kg/m^3
 MASS = ( 4 / 3) * math.pi * RADIUS**3 * DENSITY  # kgs
 INITAL_ANGLE = 45 # degrees
+INITAL_ANGLE_RAD = math.radians(INITAL_ANGLE) # radians
+INITIAL_VELOCITY = 200 # m/s
 
 @dataclass
 class State:
@@ -47,14 +49,13 @@ class Drag(Force):
         return drag_force_x, drag_force_y
 
 class InitialThrust(Force):
-    def __init__(self, force, duration, angle):
+    def __init__(self, force, duration):
         self.force = force
         self.duration = duration
-        self.angle = angle
 
     def calculate(self, t, state):
         if t < self.duration:
-            return (self.force * math.cos(self.angle), self.force * math.sin(self.angle))
+            return (self.force * math.cos(INITAL_ANGLE_RAD), self.force * math.sin(INITAL_ANGLE_RAD))
         return 0.0, 0.0
 
 class Simulator(ABC):
@@ -63,21 +64,42 @@ class Simulator(ABC):
         self.dt = dt
         self.mass = mass
         self.stop_condition = stop_condition
+        self.states = []
 
     @abstractmethod
     def transition(self, state: State) -> State:
         pass
 
-    def simulate(self, initial_state: State) -> list[State]:
+    def get_description(self) -> str:
+        return f"{type(self).__name__} with forces {[type(force).__name__ for force in self.forces]}, {self.dt} dt and {self.mass:.2f} mass"
 
-        states = [initial_state]
+    def simulate(self, initial_state: State) -> list[State]:
+        self.states = [initial_state]
         state = initial_state
 
         while not self.stop_condition(state):
             state = self.transition(state)
-            states.append(state)
+            self.states.append(state)
 
-        return states
+    def get_states(self):
+        return self.states
+
+    def print_statistics(self):
+        print (20*"-")
+        print (self.get_description())
+        final_state = self.states[-1]
+        print(f"Final time: {final_state.t:.2f} s")
+        print(f"Final position: ({final_state.x:.2f}, {final_state.y:.2f}) m")
+        print(f"Final velocity: ({final_state.vx:.2f}, {final_state.vy:.2f}) m/s")
+
+        # linear interpolation to find the time when the projectile hits the ground (y=0)
+        if len(self.states) >= 2:
+            last_state = self.states[-2]
+            final_state = self.states[-1]
+            t_hit = last_state.t + (final_state.t - last_state.t) * (-last_state.y) / (final_state.y - last_state.y)
+            x_hit = last_state.x + (final_state.x - last_state.x) * (-last_state.y) / (final_state.y - last_state.y)
+            print(f"Time of impact: {t_hit:.2f} s")
+            print(f"Distance traveled: {x_hit:.2f} m")    
 
 class ForwardEulerSimulator(Simulator):
     def transition(self, state: State) -> State:
@@ -107,45 +129,41 @@ class ExplicitEulerSimulator(Simulator):
                      new_vx, new_vy )
 
 # initial state for the simulation (starting at position (0, 0) and launching at 45 degrees with a speed of 200 m/s)
-initial_state = State(0.0, 0.0, 0.0, 200 * math.cos(math.radians(INITAL_ANGLE)), 200 * math.sin(math.radians(INITAL_ANGLE)))
+initial_state = State(0.0, 0.0, 0.0, INITIAL_VELOCITY * math.cos(INITAL_ANGLE_RAD), INITIAL_VELOCITY * math.sin(INITAL_ANGLE_RAD))
 
 # initialize forces for the simulation
 gravity = Gravity(mass= MASS, g=9.81)
 drag = Drag(drag_coefficient=0.47, air_density=1.225, frontal_area=math.pi * RADIUS**2)
-initial_thrust = InitialThrust(force=100.0, duration=5.0, angle = INITAL_ANGLE)
+initial_thrust = InitialThrust(force=100.0, duration=5.0)
 
-def main():
-    # create a simulator instance
-    simulator = ForwardEulerSimulator(forces=[gravity, drag], dt=0.0001, mass= MASS,
-                                       stop_condition=lambda state: state.y < 0)
-    states = simulator.simulate(initial_state)
-
-    # create another simulator instance with thrust included
-    simulator_with_thrust = ForwardEulerSimulator(forces=[gravity, drag, initial_thrust], dt=0.0001, mass= MASS,
-                                       stop_condition=lambda state: state.y < 0)
-    states_with_thrust = simulator_with_thrust.simulate(initial_state)
-
-    # create a simulator instance using Explicit Euler method
-    explicit_simulator = ExplicitEulerSimulator(forces=[gravity, drag], dt=0.0001, mass= MASS,
-                                       stop_condition=lambda state: state.y < 0)
-    explicit_states = explicit_simulator.simulate(initial_state)
-
-    # create another simulator instance with thrust included using Explicit Euler method
-    explicit_simulator_with_thrust = ExplicitEulerSimulator(forces=[gravity, drag, initial_thrust], dt=0.0001, mass= MASS,
-                                       stop_condition=lambda state: state.y < 0)
-    explicit_states_with_thrust = explicit_simulator_with_thrust.simulate(initial_state)
-
+def plot_results(descriptions, statess):
     # plot the trajectory
-    plt.plot([state.x for state in states], [state.y for state in states])
-    plt.plot([state.x for state in states_with_thrust], [state.y for state in states_with_thrust])
-    plt.plot([state.x for state in explicit_states], [state.y for state in explicit_states])
-    plt.plot([state.x for state in explicit_states_with_thrust], [state.y for state in explicit_states_with_thrust])
+    for description, states in zip(descriptions, statess):
+        plt.plot([state.x for state in states], [state.y for state in states], label=description)
     plt.title("Projectile Motion with Drag and Thrust")
     plt.xlabel("Distance (m)")
     plt.ylabel("Height (m)")
     plt.grid()
+    plt.legend()
     plt.show()
 
-main()
+
+def engine():
+    simulators = [
+        ForwardEulerSimulator(forces=[gravity, drag], dt=0.0001, mass= MASS, stop_condition=lambda state: state.y < 0),
+        ForwardEulerSimulator(forces=[gravity, drag, initial_thrust], dt=0.0001, mass= MASS, stop_condition=lambda state: state.y < 0),
+        ExplicitEulerSimulator(forces=[gravity, drag], dt=0.0001, mass= MASS, stop_condition=lambda state: state.y < 0),
+        ExplicitEulerSimulator(forces=[gravity, drag, initial_thrust], dt=0.0001, mass= MASS, stop_condition=lambda state: state.y < 0)
+    ]
+    statess=[]
+    descriptions=[]
+    for simulator in simulators:
+        simulator.simulate(initial_state)
+        statess.append(simulator.get_states())
+        descriptions.append(simulator.get_description())
+        simulator.print_statistics()
+
+    plot_results(descriptions, statess)
+engine()
 
     
