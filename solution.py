@@ -8,6 +8,18 @@ from typing import Callable
 import math
 import matplotlib.pyplot as plt
 
+@dataclass(frozen=True)
+class Projectile:
+    radius: float = 0.03                            # m
+    density: float = 7800.0                         # kg/m^3
+    initial_velocity: float = 200.0                 # m/s
+    launch_angle_rad: float = math.radians(45.0)    # radians
+
+@dataclass(frozen=True)
+class Environment:
+    gravity: float = 9.81                # m/s^2
+    air_density: float = 1.225           # kg/m^3
+    drag_coefficient: float = 0.47       # dimensionless
 
 @dataclass
 class State:
@@ -27,33 +39,30 @@ class State:
     vx: float
     vy: float
 
+# Create the default projectile and environment used by the simulation.
+PROJECTILE = Projectile()
+ENVIRONMENT = Environment()
 
 # Global constants
-RADIUS: float = 0.03                                                    # m
-DENSITY: float = 7800                                                   # kg/m^3
-MASS: float = (4 / 3) * math.pi * RADIUS**3 * DENSITY                   # kg
-FRONTAL_AREA = math.pi * RADIUS**2                                      # m^2
-INITIAL_ANGLE: float = 45                                               # degrees
-INITIAL_ANGLE_RAD: float = math.radians(INITIAL_ANGLE)                  # radians
-INITIAL_VELOCITY: float = 200                                           # m/s
-STOP_CONDITION: Callable[[State], bool] = lambda state: state.y < 0     # the simulations stop when the projectile hits the ground
-DELTA_T: float = 0.0001                                                 # s
+VOLUME: float = (4 / 3) * math.pi * PROJECTILE.radius**3                        # m^3
+MASS: float = VOLUME * PROJECTILE.density                                       # kg
+FRONTAL_AREA = math.pi * PROJECTILE.radius**2                                   # m^2
+STOP_CONDITION_HIT_GROUND: Callable[[State], bool] = lambda state: state.y < 0  # the simulations stop when the projectile hits the ground
+DELTA_T: float = 0.0001                                                         # s
 
 
-
+# All force models implement the same calculate() interface.
 class Force(ABC):
     """Abstract base class for forces acting on the projectile."""
 
     @abstractmethod
     def calculate(
         self,
-        t: float,
         state: State
     ) -> tuple[float, float]:
         """Calculate the force components at the current state and time.
 
         Args:
-            t: Current simulation time in seconds.
             state: Current state of the projectile.
 
         Returns:
@@ -62,6 +71,7 @@ class Force(ABC):
         pass
 
 
+# Gravity is a constant downward force.
 class Gravity(Force):
     """Represent the gravitational force acting on the projectile."""
 
@@ -77,7 +87,6 @@ class Gravity(Force):
 
     def calculate(
         self,
-        t: float,
         state: State
     ) -> tuple[float, float]:
         """Calculate the gravitational force.
@@ -85,7 +94,6 @@ class Gravity(Force):
         Gravity acts in the negative y-direction.
 
         Args:
-            t: Current simulation time in seconds.
             state: Current projectile state.
 
         Returns:
@@ -94,6 +102,7 @@ class Gravity(Force):
         return 0.0, -self.mass * self.g
 
 
+# Drag depends on the projectile's current speed and opposes its motion.
 class Drag(Force):
     """Represent aerodynamic drag acting opposite to the velocity."""
 
@@ -116,7 +125,6 @@ class Drag(Force):
 
     def calculate(
         self,
-        t: float,
         state: State
     ) -> tuple[float, float]:
         """Calculate the aerodynamic drag force.
@@ -129,14 +137,13 @@ class Drag(Force):
         the projectile velocity.
 
         Args:
-            t: Current simulation time in seconds.
             state: Current projectile state.
 
         Returns:
             A tuple containing the drag force components (Fx, Fy)
             in Newtons.
         """
-        v = (state.vx**2 + state.vy**2)**0.5 # calculate the velocity
+        v = (state.vx**2 + state.vy**2)**0.5  # Speed is the magnitude of the velocity vector.
 
         if v == 0:
             return 0.0, 0.0
@@ -155,6 +162,7 @@ class Drag(Force):
         return drag_force_x, drag_force_y
 
 
+# Optional thrust force that acts only during the initial part of the flight.
 class InitialThrust(Force):
     """Represent a constant thrust applied during the initial flight."""
 
@@ -172,7 +180,6 @@ class InitialThrust(Force):
 
     def calculate(
         self,
-        t: float,
         state: State
     ) -> tuple[float, float]:
         """Calculate the thrust force at the current time.
@@ -181,14 +188,13 @@ class InitialThrust(Force):
         the current time is less than the specified duration.
 
         Args:
-            t: Current simulation time in seconds.
             state: Current projectile state.
 
         Returns:
             A tuple containing the thrust force components (Fx, Fy)
             in Newtons. Returns (0, 0) after the thrust duration.
         """
-        if t < self.duration:
+        if state.t < self.duration:
             return (
                 self.force * math.cos(self.direction),
                 self.force * math.sin(self.direction)
@@ -197,6 +203,7 @@ class InitialThrust(Force):
         return 0.0, 0.0
 
 
+# The simulator contains the common simulation loop; subclasses define the integration method.
 class Simulator(ABC):
     """Abstract base class for projectile simulators.
 
@@ -254,6 +261,7 @@ class Simulator(ABC):
             f"{self.dt} dt and {self.mass:.2f} mass"
         )
 
+    # Repeatedly calculate the next state until the projectile reaches the ground.
     def simulate(self, initial_state: State) -> list[State]:
         """Run the simulation until the stop condition is satisfied.
 
@@ -322,6 +330,7 @@ class Simulator(ABC):
             print(f"Distance traveled: {x_hit:.2f} m")
 
 
+# Forward Euler uses the current velocity to update position and the current acceleration to update velocity.
 class ForwardEulerSimulator(Simulator):
     """Simulator using the standard Forward Euler integration method."""
 
@@ -337,14 +346,16 @@ class ForwardEulerSimulator(Simulator):
         Returns:
             The next projectile state.
         """
+        # Evaluate every force at the current state and time.
         forces = [
-            force.calculate(state.t, state)
+            force.calculate(state)
             for force in self.forces
         ]
 
         total_fx = sum(fx for fx, _ in forces)
         total_fy = sum(fy for _, fy in forces)
 
+        # Newton's second law: acceleration equals total force divided by mass.
         ax = total_fx / self.mass
         ay = total_fy / self.mass
 
@@ -357,6 +368,7 @@ class ForwardEulerSimulator(Simulator):
         )
 
 
+# Semi-implicit Euler updates velocity first and then uses the new velocity for position.
 class ExplicitEulerSimulator(Simulator):
     """Simulator using semi-implicit (symplectic) Euler integration.
 
@@ -373,14 +385,16 @@ class ExplicitEulerSimulator(Simulator):
         Returns:
             The next projectile state.
         """
+        # Evaluate every force at the current state and time.
         forces = [
-            force.calculate(state.t, state)
+            force.calculate(state)
             for force in self.forces
         ]
 
         total_fx = sum(fx for fx, _ in forces)
         total_fy = sum(fy for _, fy in forces)
 
+        # Newton's second law: acceleration equals total force divided by mass.
         ax = total_fx / self.mass
         ay = total_fy / self.mass
 
@@ -405,27 +419,28 @@ initial_state = State(
     0.0,
     0.0,
     0.0,
-    INITIAL_VELOCITY * math.cos(INITIAL_ANGLE_RAD),
-    INITIAL_VELOCITY * math.sin(INITIAL_ANGLE_RAD)
+    PROJECTILE.initial_velocity * math.cos(PROJECTILE.launch_angle_rad),
+    PROJECTILE.initial_velocity * math.sin(PROJECTILE.launch_angle_rad)
 )
 
 
-# Initialize forces.
-gravity = Gravity(mass=MASS, g=9.81)
+# Instantiate the physical forces used by the different simulation scenarios.
+gravity = Gravity(mass=MASS, g=ENVIRONMENT.gravity)
 
 drag = Drag(
-    drag_coefficient=0.47,
-    air_density=1.225,
+    drag_coefficient=ENVIRONMENT.drag_coefficient,
+    air_density=ENVIRONMENT.air_density,
     frontal_area=FRONTAL_AREA
 )
 
 initial_thrust = InitialThrust(
     force=100.0,
     duration=5.0,
-    direction=INITIAL_ANGLE_RAD
+    direction=PROJECTILE.launch_angle_rad
 )
 
 
+# Draw all simulated trajectories so the integration methods can be compared visually.
 def plot_results(
     descriptions: list[str],
     statess: list[list[State]]
@@ -451,6 +466,7 @@ def plot_results(
     plt.show()
 
 
+# Main simulation entry point: create simulators, run them, print statistics, and plot results.
 def engine() -> None:
     """Create, run, and compare the projectile simulations."""
     simulators = [
@@ -458,28 +474,28 @@ def engine() -> None:
             forces=[gravity, drag],
             dt=DELTA_T,
             mass=MASS,
-            stop_condition=STOP_CONDITION
+            stop_condition=STOP_CONDITION_HIT_GROUND
         ),
 
         ForwardEulerSimulator(
             forces=[gravity, drag, initial_thrust],
             dt=DELTA_T,
             mass=MASS,
-            stop_condition=STOP_CONDITION
+            stop_condition=STOP_CONDITION_HIT_GROUND
         ),
 
         ExplicitEulerSimulator(
             forces=[gravity, drag],
             dt=DELTA_T,
             mass=MASS,
-            stop_condition=STOP_CONDITION
+            stop_condition=STOP_CONDITION_HIT_GROUND
         ),
 
         ExplicitEulerSimulator(
             forces=[gravity, drag, initial_thrust],
             dt=DELTA_T,
             mass=MASS,
-            stop_condition=STOP_CONDITION
+            stop_condition=STOP_CONDITION_HIT_GROUND
         )
     ]
 
