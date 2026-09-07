@@ -463,6 +463,8 @@ def plot_results(
     plt.ylabel("Height (m)")
     plt.grid()
     plt.legend()
+    plt.legend(loc=2, prop={'size': 6})
+    plt.savefig("solution.png")
     plt.show()
 
 
