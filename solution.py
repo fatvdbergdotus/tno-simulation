@@ -202,6 +202,19 @@ class InitialThrust(Force):
 
         return 0.0, 0.0
 
+class CombinedForces(Force):
+    def __init__(self, forces):
+        self.forces=forces
+
+    def calculate(self, state:State):
+        forces = [
+            force.calculate(state)
+            for force in self.forces
+        ]
+
+        total_fx = sum(fx for fx, _ in forces)
+        total_fy = sum(fy for _, fy in forces)
+        return total_fx, total_fy       
 
 # The simulator contains the common simulation loop; subclasses define the integration method.
 class Simulator(ABC):
@@ -213,7 +226,7 @@ class Simulator(ABC):
 
     def __init__(
         self,
-        forces: list[Force],
+        force: Force,
         dt: float,
         mass: float,
         stop_condition: Callable[[State], bool]
@@ -221,12 +234,12 @@ class Simulator(ABC):
         """Initialize the simulator.
 
         Args:
-            forces: List of forces acting on the projectile.
+            force: Force acting on the projectile.
             dt: Simulation time step in seconds.
             mass: Projectile mass in kilograms.
             stop_condition: Function that determines when simulation stops.
         """
-        self.forces = forces
+        self.force = force
         self.dt = dt
         self.mass = mass
         self.stop_condition = stop_condition
@@ -251,13 +264,8 @@ class Simulator(ABC):
             A string containing the simulator type, forces, time step,
             and projectile mass.
         """
-        forces = ", ".join(
-            type(force).__name__ for force in self.forces
-        )
-
         return (
             f"{type(self).__name__} "
-            f"with forces {forces}, "
             f"{self.dt} dt and {self.mass:.2f} mass"
         )
 
@@ -346,18 +354,12 @@ class ForwardEulerSimulator(Simulator):
         Returns:
             The next projectile state.
         """
-        # Evaluate every force at the current state and time.
-        forces = [
-            force.calculate(state)
-            for force in self.forces
-        ]
-
-        total_fx = sum(fx for fx, _ in forces)
-        total_fy = sum(fy for _, fy in forces)
-
+        # Evaluate force at the current state and time.
+        fx, fy = self.force.calculate(state)
+        
         # Newton's second law: acceleration equals total force divided by mass.
-        ax = total_fx / self.mass
-        ay = total_fy / self.mass
+        ax = fx / self.mass
+        ay = fy / self.mass
 
         return State(
             state.t + self.dt,
@@ -385,18 +387,16 @@ class ExplicitEulerSimulator(Simulator):
         Returns:
             The next projectile state.
         """
-        # Evaluate every force at the current state and time.
-        forces = [
-            force.calculate(state)
-            for force in self.forces
-        ]
-
-        total_fx = sum(fx for fx, _ in forces)
-        total_fy = sum(fy for _, fy in forces)
+        # Evaluate force at the current state and time.
+        fx, fy = self.force.calculate(state)
+        
+        # Newton's second law: acceleration equals total force divided by mass.
+        ax = fx / self.mass
+        ay = fy / self.mass
 
         # Newton's second law: acceleration equals total force divided by mass.
-        ax = total_fx / self.mass
-        ay = total_fy / self.mass
+        ax = fx / self.mass
+        ay = fy / self.mass
 
         new_vx = state.vx + ax * self.dt
         new_vy = state.vy + ay * self.dt
@@ -473,28 +473,28 @@ def engine() -> None:
     """Create, run, and compare the projectile simulations."""
     simulators = [
         ForwardEulerSimulator(
-            forces=[gravity, drag],
+            force=CombinedForces([gravity, drag]),
             dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION_HIT_GROUND
         ),
 
         ForwardEulerSimulator(
-            forces=[gravity, drag, initial_thrust],
+            force=CombinedForces([gravity, drag, initial_thrust]),
             dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION_HIT_GROUND
         ),
 
         ExplicitEulerSimulator(
-            forces=[gravity, drag],
+            force=CombinedForces([gravity, drag]),
             dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION_HIT_GROUND
         ),
 
         ExplicitEulerSimulator(
-            forces=[gravity, drag, initial_thrust],
+            force=CombinedForces([gravity, drag, initial_thrust]),
             dt=DELTA_T,
             mass=MASS,
             stop_condition=STOP_CONDITION_HIT_GROUND
