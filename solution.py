@@ -47,8 +47,8 @@ ENVIRONMENT = Environment()
 VOLUME: float = (4 / 3) * math.pi * PROJECTILE.radius**3                        # m^3
 MASS: float = VOLUME * PROJECTILE.density                                       # kg
 FRONTAL_AREA = math.pi * PROJECTILE.radius**2                                   # m^2
-STOP_CONDITION_HIT_GROUND: Callable[[State], bool] = lambda state: state.y < 0  # the simulations stop when the projectile hits the ground
 DELTA_T: float = 0.0001                                                         # s
+STOP_CONDITION_HIT_GROUND: Callable[[State], bool] = lambda state: state.y < 0  # the simulations stop when the projectile hits the ground
 
 
 # All force models implement the same calculate() interface.
