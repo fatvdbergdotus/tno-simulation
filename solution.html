@@ -9,7 +9,7 @@
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>solution</strong></big></big></font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:d%3A%5Cutwente.svn%5Cadministration%5Cjobs2026c%5Csoftware%20engineer%20mission%2C%20simulation%20%26%20training%20systems%20tno%5Cprogrammeer%20opdracht%5Ctno-simulation%5Csolution.py">d:\utwente.svn\administration\jobs2026c\software engineer mission, simulation & training systems tno\programmeer opdracht\tno-simulation\solution.py</a></font></td></tr></table>
-    <p><tt>#&nbsp;Coding&nbsp;assignment&nbsp;TNO:PPAM:<br>
+    <p><tt>#&nbsp;Coding&nbsp;assignment&nbsp;TNO:PPAM<br>
 #&nbsp;To&nbsp;be&nbsp;found&nbsp;at:&nbsp;<a href="https://github.com/fatvdbergdotus/tno-simulation/">https://github.com/fatvdbergdotus/tno-simulation/</a><br>
 #&nbsp;(c)&nbsp;2026&nbsp;Freek&nbsp;van&nbsp;den&nbsp;Berg</tt></p>
 <p>
@@ -35,7 +35,8 @@
 <dt><font face="helvetica, arial"><a href="solution.html#Force">Force</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="solution.html#Drag">Drag</a>
+<dt><font face="helvetica, arial"><a href="solution.html#CombinedForces">CombinedForces</a>
+</font></dt><dt><font face="helvetica, arial"><a href="solution.html#Drag">Drag</a>
 </font></dt><dt><font face="helvetica, arial"><a href="solution.html#Gravity">Gravity</a>
 </font></dt><dt><font face="helvetica, arial"><a href="solution.html#InitialThrust">InitialThrust</a>
 </font></dt></dl>
@@ -62,6 +63,41 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CombinedForces">class <strong>CombinedForces</strong></a>(<a href="solution.html#Force">Force</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#CombinedForces">CombinedForces</a>(forces)<br>
+&nbsp;<br>
+Combine&nbsp;several&nbsp;force&nbsp;models&nbsp;into&nbsp;one&nbsp;total&nbsp;force.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="solution.html#CombinedForces">CombinedForces</a></dd>
+<dd><a href="solution.html#Force">Force</a></dd>
+<dd><a href="abc.html#ABC">abc.ABC</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CombinedForces-__init__"><strong>__init__</strong></a>(self, forces)</dt><dd><tt>Store&nbsp;the&nbsp;individual&nbsp;force&nbsp;models.</tt></dd></dl>
+
+<dl><dt><a name="CombinedForces-calculate"><strong>calculate</strong></a>(self, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;sum&nbsp;of&nbsp;all&nbsp;forces&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong> = frozenset()</dl>
+
+<hr>
+Data descriptors inherited from <a href="solution.html#Force">Force</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="Drag">class <strong>Drag</strong></a>(<a href="solution.html#Force">Force</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
@@ -80,26 +116,23 @@ Methods defined here:<br>
 <dl><dt><a name="Drag-__init__"><strong>__init__</strong></a>(self, drag_coefficient: float, air_density: float, frontal_area: float)</dt><dd><tt>Initialize&nbsp;the&nbsp;aerodynamic&nbsp;drag&nbsp;model.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;drag_coefficient:&nbsp;Dimensionless&nbsp;aerodynamic&nbsp;drag&nbsp;coefficient.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;air_density:&nbsp;Density&nbsp;of&nbsp;the&nbsp;surrounding&nbsp;air&nbsp;in&nbsp;kg/m^3.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;frontal_area:&nbsp;Frontal&nbsp;area&nbsp;of&nbsp;the&nbsp;projectile&nbsp;in&nbsp;m^2.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;drag_coefficient:&nbsp;Aerodynamic&nbsp;drag&nbsp;coefficient&nbsp;[-].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;air_density:&nbsp;Air&nbsp;density&nbsp;[kg/m^3].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;frontal_area:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;frontal&nbsp;area&nbsp;[m^2].</tt></dd></dl>
 
-<dl><dt><a name="Drag-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;aerodynamic&nbsp;drag&nbsp;force.<br>
+<dl><dt><a name="Drag-calculate"><strong>calculate</strong></a>(self, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;aerodynamic&nbsp;drag&nbsp;force.<br>
 &nbsp;<br>
-The&nbsp;drag&nbsp;magnitude&nbsp;is&nbsp;calculated&nbsp;using:<br>
+<a href="#Drag">Drag</a>&nbsp;magnitude&nbsp;is&nbsp;calculated&nbsp;using:<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;F_D&nbsp;=&nbsp;0.5&nbsp;*&nbsp;C_D&nbsp;*&nbsp;rho&nbsp;*&nbsp;A&nbsp;*&nbsp;v^2<br>
 &nbsp;<br>
-The&nbsp;resulting&nbsp;force&nbsp;acts&nbsp;in&nbsp;the&nbsp;direction&nbsp;opposite&nbsp;to<br>
-the&nbsp;projectile&nbsp;velocity.<br>
+The&nbsp;drag&nbsp;force&nbsp;always&nbsp;acts&nbsp;opposite&nbsp;to&nbsp;the&nbsp;velocity.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Current&nbsp;simulation&nbsp;time&nbsp;in&nbsp;seconds.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;projectile&nbsp;state.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;drag&nbsp;force&nbsp;components&nbsp;(Fx,&nbsp;Fy)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;Newtons.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Tuple&nbsp;containing&nbsp;(Fx,&nbsp;Fy)&nbsp;in&nbsp;Newtons.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -122,7 +155,7 @@ Data descriptors inherited from <a href="solution.html#Force">Force</a>:<br>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#Environment">Environment</a>(gravity:&nbsp;float&nbsp;=&nbsp;9.81,&nbsp;air_density:&nbsp;float&nbsp;=&nbsp;1.225,&nbsp;drag_coefficient:&nbsp;float&nbsp;=&nbsp;0.47)&nbsp;-&amp;gt;&nbsp;None<br>
 &nbsp;<br>
-<a href="#Environment">Environment</a>(gravity:&nbsp;float&nbsp;=&nbsp;9.81,&nbsp;air_density:&nbsp;float&nbsp;=&nbsp;1.225,&nbsp;drag_coefficient:&nbsp;float&nbsp;=&nbsp;0.47)<br>&nbsp;</tt></td></tr>
+Physical&nbsp;properties&nbsp;of&nbsp;the&nbsp;environment.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="Environment-__delattr__"><strong>__delattr__</strong></a>(self, name)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
@@ -168,12 +201,13 @@ Data and other attributes defined here:<br>
 <font color="#000000" face="helvetica, arial"><a name="ExplicitEulerSimulator">class <strong>ExplicitEulerSimulator</strong></a>(<a href="solution.html#Simulator">Simulator</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ExplicitEulerSimulator">ExplicitEulerSimulator</a>(forces:&nbsp;list[solution.<a href="#Force">Force</a>],&nbsp;dt:&nbsp;float,&nbsp;mass:&nbsp;float,&nbsp;stop_condition:&nbsp;Callable[[solution.<a href="#State">State</a>],&nbsp;bool])<br>
+<td colspan=2><tt><a href="#ExplicitEulerSimulator">ExplicitEulerSimulator</a>(force:&nbsp;solution.<a href="#Force">Force</a>,&nbsp;dt:&nbsp;float,&nbsp;mass:&nbsp;float,&nbsp;stop_condition:&nbsp;Callable[[solution.<a href="#State">State</a>],&nbsp;bool])<br>
 &nbsp;<br>
-<a href="#Simulator">Simulator</a>&nbsp;using&nbsp;semi-implicit&nbsp;(symplectic)&nbsp;Euler&nbsp;integration.<br>
+<a href="#Simulator">Simulator</a>&nbsp;using&nbsp;semi-implicit&nbsp;(symplectic)&nbsp;Euler.<br>
 &nbsp;<br>
-Velocity&nbsp;is&nbsp;updated&nbsp;before&nbsp;position,&nbsp;so&nbsp;the&nbsp;newly&nbsp;calculated<br>
-velocity&nbsp;is&nbsp;used&nbsp;to&nbsp;update&nbsp;the&nbsp;position.<br>&nbsp;</tt></td></tr>
+Despite&nbsp;the&nbsp;class&nbsp;name,&nbsp;this&nbsp;implementation&nbsp;uses&nbsp;the<br>
+semi-implicit/symplectic&nbsp;Euler&nbsp;method:&nbsp;velocity&nbsp;is&nbsp;updated&nbsp;first,<br>
+and&nbsp;the&nbsp;new&nbsp;velocity&nbsp;is&nbsp;then&nbsp;used&nbsp;to&nbsp;update&nbsp;position.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="solution.html#ExplicitEulerSimulator">ExplicitEulerSimulator</a></dd>
@@ -183,13 +217,7 @@ velocity&nbsp;is&nbsp;used&nbsp;to&nbsp;update&nbsp;the&nbsp;position.<br>&nbsp;
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="ExplicitEulerSimulator-transition"><strong>transition</strong></a>(self, state: solution.State) -&gt; solution.State</dt><dd><tt>Calculate&nbsp;the&nbsp;next&nbsp;state&nbsp;using&nbsp;semi-implicit&nbsp;Euler.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;projectile&nbsp;state.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;next&nbsp;projectile&nbsp;state.</tt></dd></dl>
+<dl><dt><a name="ExplicitEulerSimulator-transition"><strong>transition</strong></a>(self, state: solution.State) -&gt; solution.State</dt><dd><tt>Calculate&nbsp;the&nbsp;next&nbsp;state&nbsp;using&nbsp;semi-implicit&nbsp;Euler.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -197,26 +225,19 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="solution.html#Simulator">Simulator</a>:<br>
-<dl><dt><a name="ExplicitEulerSimulator-__init__"><strong>__init__</strong></a>(self, forces: list[solution.Force], dt: float, mass: float, stop_condition: Callable[[solution.State], bool])</dt><dd><tt>Initialize&nbsp;the&nbsp;simulator.<br>
+<dl><dt><a name="ExplicitEulerSimulator-__init__"><strong>__init__</strong></a>(self, force: solution.Force, dt: float, mass: float, stop_condition: Callable[[solution.State], bool])</dt><dd><tt>Initialize&nbsp;the&nbsp;simulator.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;forces:&nbsp;List&nbsp;of&nbsp;forces&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;dt:&nbsp;Simulation&nbsp;time&nbsp;step&nbsp;in&nbsp;seconds.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;in&nbsp;kilograms.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;stop_condition:&nbsp;Function&nbsp;that&nbsp;determines&nbsp;when&nbsp;simulation&nbsp;stops.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;force:&nbsp;<a href="#Force">Force</a>&nbsp;model&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dt:&nbsp;Simulation&nbsp;time&nbsp;step&nbsp;[s].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;[kg].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stop_condition:&nbsp;Function&nbsp;determining&nbsp;when&nbsp;to&nbsp;stop.</tt></dd></dl>
 
-<dl><dt><a name="ExplicitEulerSimulator-get_description"><strong>get_description</strong></a>(self) -&gt; str</dt><dd><tt>Return&nbsp;a&nbsp;human-readable&nbsp;description&nbsp;of&nbsp;the&nbsp;simulator.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;containing&nbsp;the&nbsp;simulator&nbsp;type,&nbsp;forces,&nbsp;time&nbsp;step,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;projectile&nbsp;mass.</tt></dd></dl>
+<dl><dt><a name="ExplicitEulerSimulator-get_description"><strong>get_description</strong></a>(self) -&gt; str</dt><dd><tt>Return&nbsp;a&nbsp;short&nbsp;description&nbsp;of&nbsp;the&nbsp;simulator.</tt></dd></dl>
 
-<dl><dt><a name="ExplicitEulerSimulator-get_states"><strong>get_states</strong></a>(self) -&gt; list[solution.State]</dt><dd><tt>Return&nbsp;all&nbsp;states&nbsp;generated&nbsp;by&nbsp;the&nbsp;simulation.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;sequence&nbsp;of&nbsp;projectile&nbsp;states.</tt></dd></dl>
+<dl><dt><a name="ExplicitEulerSimulator-get_states"><strong>get_states</strong></a>(self) -&gt; list[solution.State]</dt><dd><tt>Return&nbsp;all&nbsp;states&nbsp;generated&nbsp;by&nbsp;the&nbsp;simulation.</tt></dd></dl>
 
-<dl><dt><a name="ExplicitEulerSimulator-print_statistics"><strong>print_statistics</strong></a>(self) -&gt; None</dt><dd><tt>Print&nbsp;the&nbsp;final&nbsp;state&nbsp;and&nbsp;estimated&nbsp;impact&nbsp;statistics.</tt></dd></dl>
+<dl><dt><a name="ExplicitEulerSimulator-print_statistics"><strong>print_statistics</strong></a>(self) -&gt; None</dt><dd><tt>Print&nbsp;final-state&nbsp;and&nbsp;estimated&nbsp;impact&nbsp;statistics.</tt></dd></dl>
 
 <dl><dt><a name="ExplicitEulerSimulator-simulate"><strong>simulate</strong></a>(self, initial_state: solution.State) -&gt; list[solution.State]</dt><dd><tt>Run&nbsp;the&nbsp;simulation&nbsp;until&nbsp;the&nbsp;stop&nbsp;condition&nbsp;is&nbsp;satisfied.<br>
 &nbsp;<br>
@@ -224,7 +245,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;initial_state:&nbsp;Initial&nbsp;state&nbsp;of&nbsp;the&nbsp;projectile.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;list&nbsp;containing&nbsp;all&nbsp;states&nbsp;generated&nbsp;during&nbsp;the&nbsp;simulation.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;containing&nbsp;all&nbsp;generated&nbsp;projectile&nbsp;states.</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="solution.html#Simulator">Simulator</a>:<br>
@@ -241,7 +262,10 @@ Data descriptors inherited from <a href="solution.html#Simulator">Simulator</a>:
 <font color="#000000" face="helvetica, arial"><a name="Force">class <strong>Force</strong></a>(<a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Abstract&nbsp;base&nbsp;class&nbsp;for&nbsp;forces&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>Abstract&nbsp;base&nbsp;class&nbsp;for&nbsp;forces&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
+&nbsp;<br>
+Every&nbsp;force&nbsp;model&nbsp;must&nbsp;implement&nbsp;<a href="#Force-calculate">calculate</a>(),&nbsp;which&nbsp;returns&nbsp;the<br>
+horizontal&nbsp;and&nbsp;vertical&nbsp;force&nbsp;components.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="solution.html#Force">Force</a></dd>
@@ -250,14 +274,13 @@ Data descriptors inherited from <a href="solution.html#Simulator">Simulator</a>:
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Force-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;force&nbsp;components&nbsp;at&nbsp;the&nbsp;current&nbsp;state&nbsp;and&nbsp;time.<br>
+<dl><dt><a name="Force-calculate"><strong>calculate</strong></a>(self, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;force&nbsp;at&nbsp;the&nbsp;current&nbsp;projectile&nbsp;state.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Current&nbsp;simulation&nbsp;time&nbsp;in&nbsp;seconds.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;state&nbsp;of&nbsp;the&nbsp;projectile.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;force&nbsp;components&nbsp;(Fx,&nbsp;Fy)&nbsp;in&nbsp;Newtons.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Tuple&nbsp;containing&nbsp;(Fx,&nbsp;Fy)&nbsp;in&nbsp;Newtons.</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -278,9 +301,11 @@ Data and other attributes defined here:<br>
 <font color="#000000" face="helvetica, arial"><a name="ForwardEulerSimulator">class <strong>ForwardEulerSimulator</strong></a>(<a href="solution.html#Simulator">Simulator</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ForwardEulerSimulator">ForwardEulerSimulator</a>(forces:&nbsp;list[solution.<a href="#Force">Force</a>],&nbsp;dt:&nbsp;float,&nbsp;mass:&nbsp;float,&nbsp;stop_condition:&nbsp;Callable[[solution.<a href="#State">State</a>],&nbsp;bool])<br>
+<td colspan=2><tt><a href="#ForwardEulerSimulator">ForwardEulerSimulator</a>(force:&nbsp;solution.<a href="#Force">Force</a>,&nbsp;dt:&nbsp;float,&nbsp;mass:&nbsp;float,&nbsp;stop_condition:&nbsp;Callable[[solution.<a href="#State">State</a>],&nbsp;bool])<br>
 &nbsp;<br>
-<a href="#Simulator">Simulator</a>&nbsp;using&nbsp;the&nbsp;standard&nbsp;Forward&nbsp;Euler&nbsp;integration&nbsp;method.<br>&nbsp;</tt></td></tr>
+<a href="#Simulator">Simulator</a>&nbsp;using&nbsp;the&nbsp;standard&nbsp;Forward&nbsp;Euler&nbsp;method.<br>
+&nbsp;<br>
+Forward&nbsp;Euler&nbsp;uses&nbsp;the&nbsp;current&nbsp;velocity&nbsp;to&nbsp;update&nbsp;position.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="solution.html#ForwardEulerSimulator">ForwardEulerSimulator</a></dd>
@@ -290,16 +315,7 @@ Data and other attributes defined here:<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="ForwardEulerSimulator-transition"><strong>transition</strong></a>(self, state: solution.State) -&gt; solution.State</dt><dd><tt>Calculate&nbsp;the&nbsp;next&nbsp;state&nbsp;using&nbsp;Forward&nbsp;Euler&nbsp;integration.<br>
-&nbsp;<br>
-Forces&nbsp;are&nbsp;evaluated&nbsp;using&nbsp;the&nbsp;current&nbsp;state.&nbsp;The&nbsp;resulting<br>
-acceleration&nbsp;is&nbsp;then&nbsp;used&nbsp;to&nbsp;update&nbsp;velocity&nbsp;and&nbsp;position.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;projectile&nbsp;state.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;next&nbsp;projectile&nbsp;state.</tt></dd></dl>
+<dl><dt><a name="ForwardEulerSimulator-transition"><strong>transition</strong></a>(self, state: solution.State) -&gt; solution.State</dt><dd><tt>Calculate&nbsp;the&nbsp;next&nbsp;state&nbsp;using&nbsp;Forward&nbsp;Euler.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -307,26 +323,19 @@ Data and other attributes defined here:<br>
 
 <hr>
 Methods inherited from <a href="solution.html#Simulator">Simulator</a>:<br>
-<dl><dt><a name="ForwardEulerSimulator-__init__"><strong>__init__</strong></a>(self, forces: list[solution.Force], dt: float, mass: float, stop_condition: Callable[[solution.State], bool])</dt><dd><tt>Initialize&nbsp;the&nbsp;simulator.<br>
+<dl><dt><a name="ForwardEulerSimulator-__init__"><strong>__init__</strong></a>(self, force: solution.Force, dt: float, mass: float, stop_condition: Callable[[solution.State], bool])</dt><dd><tt>Initialize&nbsp;the&nbsp;simulator.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;forces:&nbsp;List&nbsp;of&nbsp;forces&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;dt:&nbsp;Simulation&nbsp;time&nbsp;step&nbsp;in&nbsp;seconds.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;in&nbsp;kilograms.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;stop_condition:&nbsp;Function&nbsp;that&nbsp;determines&nbsp;when&nbsp;simulation&nbsp;stops.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;force:&nbsp;<a href="#Force">Force</a>&nbsp;model&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dt:&nbsp;Simulation&nbsp;time&nbsp;step&nbsp;[s].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;[kg].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stop_condition:&nbsp;Function&nbsp;determining&nbsp;when&nbsp;to&nbsp;stop.</tt></dd></dl>
 
-<dl><dt><a name="ForwardEulerSimulator-get_description"><strong>get_description</strong></a>(self) -&gt; str</dt><dd><tt>Return&nbsp;a&nbsp;human-readable&nbsp;description&nbsp;of&nbsp;the&nbsp;simulator.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;containing&nbsp;the&nbsp;simulator&nbsp;type,&nbsp;forces,&nbsp;time&nbsp;step,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;projectile&nbsp;mass.</tt></dd></dl>
+<dl><dt><a name="ForwardEulerSimulator-get_description"><strong>get_description</strong></a>(self) -&gt; str</dt><dd><tt>Return&nbsp;a&nbsp;short&nbsp;description&nbsp;of&nbsp;the&nbsp;simulator.</tt></dd></dl>
 
-<dl><dt><a name="ForwardEulerSimulator-get_states"><strong>get_states</strong></a>(self) -&gt; list[solution.State]</dt><dd><tt>Return&nbsp;all&nbsp;states&nbsp;generated&nbsp;by&nbsp;the&nbsp;simulation.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;sequence&nbsp;of&nbsp;projectile&nbsp;states.</tt></dd></dl>
+<dl><dt><a name="ForwardEulerSimulator-get_states"><strong>get_states</strong></a>(self) -&gt; list[solution.State]</dt><dd><tt>Return&nbsp;all&nbsp;states&nbsp;generated&nbsp;by&nbsp;the&nbsp;simulation.</tt></dd></dl>
 
-<dl><dt><a name="ForwardEulerSimulator-print_statistics"><strong>print_statistics</strong></a>(self) -&gt; None</dt><dd><tt>Print&nbsp;the&nbsp;final&nbsp;state&nbsp;and&nbsp;estimated&nbsp;impact&nbsp;statistics.</tt></dd></dl>
+<dl><dt><a name="ForwardEulerSimulator-print_statistics"><strong>print_statistics</strong></a>(self) -&gt; None</dt><dd><tt>Print&nbsp;final-state&nbsp;and&nbsp;estimated&nbsp;impact&nbsp;statistics.</tt></dd></dl>
 
 <dl><dt><a name="ForwardEulerSimulator-simulate"><strong>simulate</strong></a>(self, initial_state: solution.State) -&gt; list[solution.State]</dt><dd><tt>Run&nbsp;the&nbsp;simulation&nbsp;until&nbsp;the&nbsp;stop&nbsp;condition&nbsp;is&nbsp;satisfied.<br>
 &nbsp;<br>
@@ -334,7 +343,7 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;initial_state:&nbsp;Initial&nbsp;state&nbsp;of&nbsp;the&nbsp;projectile.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;list&nbsp;containing&nbsp;all&nbsp;states&nbsp;generated&nbsp;during&nbsp;the&nbsp;simulation.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;containing&nbsp;all&nbsp;generated&nbsp;projectile&nbsp;states.</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="solution.html#Simulator">Simulator</a>:<br>
@@ -363,22 +372,21 @@ Represent&nbsp;the&nbsp;gravitational&nbsp;force&nbsp;acting&nbsp;on&nbsp;the&nb
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Gravity-__init__"><strong>__init__</strong></a>(self, mass: float, g: float = 9.81)</dt><dd><tt>Initialize&nbsp;a&nbsp;gravitational&nbsp;force.<br>
+<dl><dt><a name="Gravity-__init__"><strong>__init__</strong></a>(self, mass: float, g: float = 9.81)</dt><dd><tt>Initialize&nbsp;the&nbsp;gravitational&nbsp;force.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;in&nbsp;kilograms.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;g:&nbsp;Gravitational&nbsp;acceleration&nbsp;in&nbsp;meters&nbsp;per&nbsp;second&nbsp;squared.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;[kg].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;g:&nbsp;Gravitational&nbsp;acceleration&nbsp;[m/s^2].</tt></dd></dl>
 
-<dl><dt><a name="Gravity-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;gravitational&nbsp;force.<br>
+<dl><dt><a name="Gravity-calculate"><strong>calculate</strong></a>(self, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;gravitational&nbsp;force.<br>
 &nbsp;<br>
-<a href="#Gravity">Gravity</a>&nbsp;acts&nbsp;in&nbsp;the&nbsp;negative&nbsp;y-direction.<br>
+<a href="#Gravity">Gravity</a>&nbsp;acts&nbsp;only&nbsp;in&nbsp;the&nbsp;negative&nbsp;y-direction.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Current&nbsp;simulation&nbsp;time&nbsp;in&nbsp;seconds.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;projectile&nbsp;state.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;gravitational&nbsp;force&nbsp;(Fx,&nbsp;Fy)&nbsp;in&nbsp;Newtons.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Tuple&nbsp;containing&nbsp;(Fx,&nbsp;Fy)&nbsp;in&nbsp;Newtons.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -414,22 +422,20 @@ Methods defined here:<br>
 <dl><dt><a name="InitialThrust-__init__"><strong>__init__</strong></a>(self, force: float, duration: float, direction: float)</dt><dd><tt>Initialize&nbsp;the&nbsp;initial&nbsp;thrust.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;force:&nbsp;Thrust&nbsp;magnitude&nbsp;in&nbsp;Newtons.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;duration:&nbsp;Duration&nbsp;of&nbsp;the&nbsp;thrust&nbsp;in&nbsp;seconds.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;direction:&nbsp;Direction&nbsp;of&nbsp;the&nbsp;thrust&nbsp;in&nbsp;radians.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;force:&nbsp;Thrust&nbsp;magnitude&nbsp;[N].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration:&nbsp;Duration&nbsp;of&nbsp;the&nbsp;thrust&nbsp;[s].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;direction:&nbsp;Thrust&nbsp;direction&nbsp;[rad].</tt></dd></dl>
 
-<dl><dt><a name="InitialThrust-calculate"><strong>calculate</strong></a>(self, t: float, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;thrust&nbsp;force&nbsp;at&nbsp;the&nbsp;current&nbsp;time.<br>
+<dl><dt><a name="InitialThrust-calculate"><strong>calculate</strong></a>(self, state: solution.State) -&gt; tuple[float, float]</dt><dd><tt>Calculate&nbsp;the&nbsp;thrust&nbsp;force&nbsp;at&nbsp;the&nbsp;current&nbsp;time.<br>
 &nbsp;<br>
-The&nbsp;thrust&nbsp;is&nbsp;applied&nbsp;at&nbsp;the&nbsp;initial&nbsp;launch&nbsp;angle&nbsp;while<br>
-the&nbsp;current&nbsp;time&nbsp;is&nbsp;less&nbsp;than&nbsp;the&nbsp;specified&nbsp;duration.<br>
+Thrust&nbsp;is&nbsp;applied&nbsp;in&nbsp;a&nbsp;fixed&nbsp;direction&nbsp;while&nbsp;the&nbsp;current<br>
+simulation&nbsp;time&nbsp;is&nbsp;less&nbsp;than&nbsp;the&nbsp;specified&nbsp;duration.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Current&nbsp;simulation&nbsp;time&nbsp;in&nbsp;seconds.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;projectile&nbsp;state.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;thrust&nbsp;force&nbsp;components&nbsp;(Fx,&nbsp;Fy)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;Newtons.&nbsp;Returns&nbsp;(0,&nbsp;0)&nbsp;after&nbsp;the&nbsp;thrust&nbsp;duration.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Tuple&nbsp;containing&nbsp;(Fx,&nbsp;Fy)&nbsp;in&nbsp;Newtons.</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -452,7 +458,7 @@ Data descriptors inherited from <a href="solution.html#Force">Force</a>:<br>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#Projectile">Projectile</a>(radius:&nbsp;float&nbsp;=&nbsp;0.03,&nbsp;density:&nbsp;float&nbsp;=&nbsp;7800.0,&nbsp;initial_velocity:&nbsp;float&nbsp;=&nbsp;200.0,&nbsp;launch_angle_rad:&nbsp;float&nbsp;=&nbsp;0.7853981633974483)&nbsp;-&amp;gt;&nbsp;None<br>
 &nbsp;<br>
-<a href="#Projectile">Projectile</a>(radius:&nbsp;float&nbsp;=&nbsp;0.03,&nbsp;density:&nbsp;float&nbsp;=&nbsp;7800.0,&nbsp;initial_velocity:&nbsp;float&nbsp;=&nbsp;200.0,&nbsp;launch_angle_rad:&nbsp;float&nbsp;=&nbsp;0.7853981633974483)<br>&nbsp;</tt></td></tr>
+Physical&nbsp;properties&nbsp;and&nbsp;initial&nbsp;conditions&nbsp;of&nbsp;the&nbsp;projectile.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="Projectile-__delattr__"><strong>__delattr__</strong></a>(self, name)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
@@ -500,12 +506,12 @@ Data and other attributes defined here:<br>
 <font color="#000000" face="helvetica, arial"><a name="Simulator">class <strong>Simulator</strong></a>(<a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Simulator">Simulator</a>(forces:&nbsp;list[solution.<a href="#Force">Force</a>],&nbsp;dt:&nbsp;float,&nbsp;mass:&nbsp;float,&nbsp;stop_condition:&nbsp;Callable[[solution.<a href="#State">State</a>],&nbsp;bool])<br>
+<td colspan=2><tt><a href="#Simulator">Simulator</a>(force:&nbsp;solution.<a href="#Force">Force</a>,&nbsp;dt:&nbsp;float,&nbsp;mass:&nbsp;float,&nbsp;stop_condition:&nbsp;Callable[[solution.<a href="#State">State</a>],&nbsp;bool])<br>
 &nbsp;<br>
 Abstract&nbsp;base&nbsp;class&nbsp;for&nbsp;projectile&nbsp;simulators.<br>
 &nbsp;<br>
-The&nbsp;simulator&nbsp;maintains&nbsp;a&nbsp;sequence&nbsp;of&nbsp;projectile&nbsp;states&nbsp;and<br>
-repeatedly&nbsp;applies&nbsp;a&nbsp;transition&nbsp;until&nbsp;the&nbsp;stop&nbsp;condition&nbsp;is&nbsp;met.<br>&nbsp;</tt></td></tr>
+The&nbsp;simulator&nbsp;contains&nbsp;the&nbsp;common&nbsp;simulation&nbsp;loop.&nbsp;Subclasses<br>
+implement&nbsp;the&nbsp;numerical&nbsp;integration&nbsp;method&nbsp;in&nbsp;<a href="#Simulator-transition">transition</a>().<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="solution.html#Simulator">Simulator</a></dd>
@@ -514,26 +520,19 @@ repeatedly&nbsp;applies&nbsp;a&nbsp;transition&nbsp;until&nbsp;the&nbsp;stop&nbs
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Simulator-__init__"><strong>__init__</strong></a>(self, forces: list[solution.Force], dt: float, mass: float, stop_condition: Callable[[solution.State], bool])</dt><dd><tt>Initialize&nbsp;the&nbsp;simulator.<br>
+<dl><dt><a name="Simulator-__init__"><strong>__init__</strong></a>(self, force: solution.Force, dt: float, mass: float, stop_condition: Callable[[solution.State], bool])</dt><dd><tt>Initialize&nbsp;the&nbsp;simulator.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;forces:&nbsp;List&nbsp;of&nbsp;forces&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;dt:&nbsp;Simulation&nbsp;time&nbsp;step&nbsp;in&nbsp;seconds.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;in&nbsp;kilograms.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;stop_condition:&nbsp;Function&nbsp;that&nbsp;determines&nbsp;when&nbsp;simulation&nbsp;stops.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;force:&nbsp;<a href="#Force">Force</a>&nbsp;model&nbsp;acting&nbsp;on&nbsp;the&nbsp;projectile.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dt:&nbsp;Simulation&nbsp;time&nbsp;step&nbsp;[s].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mass:&nbsp;<a href="#Projectile">Projectile</a>&nbsp;mass&nbsp;[kg].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stop_condition:&nbsp;Function&nbsp;determining&nbsp;when&nbsp;to&nbsp;stop.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-get_description"><strong>get_description</strong></a>(self) -&gt; str</dt><dd><tt>Return&nbsp;a&nbsp;human-readable&nbsp;description&nbsp;of&nbsp;the&nbsp;simulator.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;string&nbsp;containing&nbsp;the&nbsp;simulator&nbsp;type,&nbsp;forces,&nbsp;time&nbsp;step,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;projectile&nbsp;mass.</tt></dd></dl>
+<dl><dt><a name="Simulator-get_description"><strong>get_description</strong></a>(self) -&gt; str</dt><dd><tt>Return&nbsp;a&nbsp;short&nbsp;description&nbsp;of&nbsp;the&nbsp;simulator.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-get_states"><strong>get_states</strong></a>(self) -&gt; list[solution.State]</dt><dd><tt>Return&nbsp;all&nbsp;states&nbsp;generated&nbsp;by&nbsp;the&nbsp;simulation.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;sequence&nbsp;of&nbsp;projectile&nbsp;states.</tt></dd></dl>
+<dl><dt><a name="Simulator-get_states"><strong>get_states</strong></a>(self) -&gt; list[solution.State]</dt><dd><tt>Return&nbsp;all&nbsp;states&nbsp;generated&nbsp;by&nbsp;the&nbsp;simulation.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-print_statistics"><strong>print_statistics</strong></a>(self) -&gt; None</dt><dd><tt>Print&nbsp;the&nbsp;final&nbsp;state&nbsp;and&nbsp;estimated&nbsp;impact&nbsp;statistics.</tt></dd></dl>
+<dl><dt><a name="Simulator-print_statistics"><strong>print_statistics</strong></a>(self) -&gt; None</dt><dd><tt>Print&nbsp;final-state&nbsp;and&nbsp;estimated&nbsp;impact&nbsp;statistics.</tt></dd></dl>
 
 <dl><dt><a name="Simulator-simulate"><strong>simulate</strong></a>(self, initial_state: solution.State) -&gt; list[solution.State]</dt><dd><tt>Run&nbsp;the&nbsp;simulation&nbsp;until&nbsp;the&nbsp;stop&nbsp;condition&nbsp;is&nbsp;satisfied.<br>
 &nbsp;<br>
@@ -541,15 +540,9 @@ Args:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;initial_state:&nbsp;Initial&nbsp;state&nbsp;of&nbsp;the&nbsp;projectile.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;list&nbsp;containing&nbsp;all&nbsp;states&nbsp;generated&nbsp;during&nbsp;the&nbsp;simulation.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;List&nbsp;containing&nbsp;all&nbsp;generated&nbsp;projectile&nbsp;states.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-transition"><strong>transition</strong></a>(self, state: solution.State) -&gt; solution.State</dt><dd><tt>Calculate&nbsp;the&nbsp;next&nbsp;state&nbsp;from&nbsp;the&nbsp;current&nbsp;state.<br>
-&nbsp;<br>
-Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;state:&nbsp;Current&nbsp;projectile&nbsp;state.<br>
-&nbsp;<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;next&nbsp;projectile&nbsp;state.</tt></dd></dl>
+<dl><dt><a name="Simulator-transition"><strong>transition</strong></a>(self, state: solution.State) -&gt; solution.State</dt><dd><tt>Calculate&nbsp;the&nbsp;next&nbsp;state&nbsp;from&nbsp;the&nbsp;current&nbsp;state.</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -575,11 +568,11 @@ Data and other attributes defined here:<br>
 Represent&nbsp;the&nbsp;state&nbsp;of&nbsp;the&nbsp;projectile&nbsp;at&nbsp;a&nbsp;given&nbsp;point&nbsp;in&nbsp;time.<br>
 &nbsp;<br>
 Attributes:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Time&nbsp;in&nbsp;seconds.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;x:&nbsp;Horizontal&nbsp;position&nbsp;in&nbsp;meters.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;y:&nbsp;Vertical&nbsp;position&nbsp;in&nbsp;meters.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;vx:&nbsp;Horizontal&nbsp;velocity&nbsp;in&nbsp;meters&nbsp;per&nbsp;second.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;vy:&nbsp;Vertical&nbsp;velocity&nbsp;in&nbsp;meters&nbsp;per&nbsp;second.<br>&nbsp;</tt></td></tr>
+&nbsp;&nbsp;&nbsp;&nbsp;t:&nbsp;Time&nbsp;[s].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x:&nbsp;Horizontal&nbsp;position&nbsp;[m].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y:&nbsp;Vertical&nbsp;position&nbsp;[m].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vx:&nbsp;Horizontal&nbsp;velocity&nbsp;[m/s].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vy:&nbsp;Vertical&nbsp;velocity&nbsp;[m/s].<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="State-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><tt>Return&nbsp;self==value.</tt></dd></dl>
@@ -616,11 +609,11 @@ Data and other attributes defined here:<br>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><strong>STOP_CONDITION_HIT_GROUND</strong> <em>lambda</em> state</dt></dl>
- <dl><dt><a name="-engine"><strong>engine</strong></a>() -&gt; None</dt><dd><tt>Create,&nbsp;run,&nbsp;and&nbsp;compare&nbsp;the&nbsp;projectile&nbsp;simulations.</tt></dd></dl>
- <dl><dt><a name="-plot_results"><strong>plot_results</strong></a>(descriptions: list[str], statess: list[list[solution.State]]) -&gt; None</dt><dd><tt>Plot&nbsp;the&nbsp;trajectories&nbsp;of&nbsp;multiple&nbsp;simulations.<br>
+ <dl><dt><a name="-engine"><strong>engine</strong></a>() -&gt; None</dt><dd><tt>Create,&nbsp;run&nbsp;and&nbsp;compare&nbsp;the&nbsp;projectile&nbsp;simulations.</tt></dd></dl>
+ <dl><dt><a name="-plot_results"><strong>plot_results</strong></a>(descriptions: list[str], statess: list[list[solution.State]]) -&gt; None</dt><dd><tt>Plot&nbsp;the&nbsp;trajectories&nbsp;produced&nbsp;by&nbsp;multiple&nbsp;simulations.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;descriptions:&nbsp;Labels&nbsp;used&nbsp;in&nbsp;the&nbsp;plot&nbsp;legend.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;descriptions:&nbsp;Labels&nbsp;for&nbsp;the&nbsp;trajectories.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;statess:&nbsp;Lists&nbsp;of&nbsp;states&nbsp;produced&nbsp;by&nbsp;each&nbsp;simulator.</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -635,7 +628,8 @@ Args:<br>
 <strong>FRONTAL_AREA</strong> = 0.0028274333882308137<br>
 <strong>MASS</strong> = 0.8821592171280137<br>
 <strong>PROJECTILE</strong> = Projectile(radius=0.03, density=7800.0, initial_velocity=200.0, launch_angle_rad=0.7853981633974483)<br>
-<strong>__annotations__</strong> = {'DELTA_T': &lt;class 'float'&gt;, 'MASS': &lt;class 'float'&gt;, 'STOP_CONDITION_HIT_GROUND': typing.Callable[[solution.State], bool]}<br>
+<strong>VOLUME</strong> = 0.00011309733552923252<br>
+<strong>__annotations__</strong> = {'DELTA_T': &lt;class 'float'&gt;, 'MASS': &lt;class 'float'&gt;, 'STOP_CONDITION_HIT_GROUND': typing.Callable[[solution.State], bool], 'VOLUME': &lt;class 'float'&gt;}<br>
 <strong>drag</strong> = &lt;solution.Drag object&gt;<br>
 <strong>gravity</strong> = &lt;solution.Gravity object&gt;<br>
 <strong>initial_state</strong> = State(t=0.0, x=0.0, y=0.0, vx=141.4213562373095, vy=141.4213562373095)<br>
